@@ -1,18 +1,25 @@
 {
   "dependencies": {
-    "express": "^4.18.2"
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "mongoose": "^6.7.5"
   },
   "devDependencies": {
     "@types/express": "^4.17.14",
+    "@types/mongoose": "^5.11.97",
     "@types/node": "^18.11.9",
+    "nodemon": "^2.0.20",
+    "ts-node": "^10.9.1",
+    "tsconfig-paths": "^4.1.1",
     "typescript": "^4.9.3"
   },
   "name": "binge-watching-api",
   "description": "Binge Watching Server API",
   "version": "0.0.1",
-  "main": "server.js",
+  "main": "dist/server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon dist/server.js"
   },
   "repository": {
     "type": "git",
@@ -30,5 +37,6 @@
   "bugs": {
     "url": "https://github.com/albertocavazzoni/binge-watching-api/issues"
   },
-  "homepage": "https://github.com/albertocavazzoni/binge-watching-api#readme"
+  "homepage": "https://github.com/albertocavazzoni/binge-watching-api#readme",
+  "type": "module"
 }
