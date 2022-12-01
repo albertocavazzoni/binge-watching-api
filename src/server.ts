@@ -1,9 +1,7 @@
 import express from 'express';
+import 'dotenv/config';
 import { usersRouter } from './users/users.router.js';
 import { mongoConnect } from './config/mongo.js';
-import * as dotenv from 'dotenv';
-
-dotenv.config({ path: '../.env' });
 
 const PORT = 8000;
 

@@ -1,13 +1,6 @@
 import mongoose from 'mongoose';
 
-const user = {
-    username: process.env.MONGO_USER,
-    password: process.env.MONGO_URL,
-};
-
-console.log(user);
-
-const MONGO_URL = `mongodb+srv://${user.username}:${user.password}@cluster0.zfjcqjr.mongodb.net/?retryWrites=true&w=majority`;
+const MONGO_URL = process.env.MONGO_URL;
 
 mongoose.connection.once('open', () => console.log('MongoDB Connection ready'));
 mongoose.connection.on('error', err => console.error(err));
