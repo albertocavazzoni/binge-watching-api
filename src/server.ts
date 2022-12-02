@@ -1,7 +1,7 @@
 import express from 'express';
 import 'dotenv/config';
 import { usersRouter } from './users/users.router.js';
-import { mongoConnect } from './config/mongo.js';
+import { test } from './config/postgres.js';
 
 const PORT = 8000;
 
@@ -14,6 +14,6 @@ app.get('/', (_req, res) => {
 app.use('/users', usersRouter);
 
 app.listen(PORT, async () => {
-    await mongoConnect();
+    await test();
     console.log('App listening on port', PORT);
 });
