@@ -1,11 +1,12 @@
 import pg from 'pg';
+import env from '../config/env.js';
 
 const options: pg.PoolConfig = {
-    host: process.env.PG_HOST,
-    port: 5432,
-    user: process.env.PG_USER,
-    password: process.env.PG_PASSWORD,
-    database: process.env.PG_DATABASE,
+    host: env.PG_HOST,
+    port: env.PG_PORT,
+    user: env.PG_USER,
+    password: env.PG_PASSWORD,
+    database: env.PG_DATABASE,
     statement_timeout: 50000, // number of milliseconds before a statement in query will time out, default is no timeout
     query_timeout: 50000, // number of milliseconds before a query call will timeout, default is no timeout
     application_name: 'binge-watching',
