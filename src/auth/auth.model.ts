@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
 import env from '../config/env.js';
 import { getUserByUsername } from '../users/users.model.js';
 
@@ -32,7 +33,8 @@ async function verifyUser(username: string, password: string) {
         };
     }
 
-    if (password !== user.password) {
+    const verifyPassword = await bcrypt.compare(password, user.password);
+    if (!verifyPassword) {
         return {
             status: 'error',
             message: `Wrong username or password`,
@@ -42,7 +44,7 @@ async function verifyUser(username: string, password: string) {
 
     return {
         status: 'OK',
-        user: user,
+        data: { user },
     };
 }
 

@@ -6,22 +6,25 @@ async function login(req: Request, res: Response) {
     const password: string = req.body.password;
 
     const verified = await verifyUser(username, password);
-    if (verified.status === 'error' && verified.user) {
+    if (
+        verified.status === 'error' &&
+        (!verified.data || !verified.data.user)
+    ) {
         return res.status(verified.statusCode!).send({
             status: verified.status,
             message: verified.message,
         });
     }
 
-    const user = verified.user!;
+    const user = verified.data?.user!;
 
-    const tokenDuration = req.body.keepMeLoggedIn ? '10d' : '1m';
+    const tokenDuration = req.body.keepMeLoggedIn ? '15d' : '1d';
 
     const tokenData = { sub: user.id, name: user.username };
 
     const token = await generateToken(tokenData, tokenDuration);
 
-    return res.status(200).send({ status: 'OK', token: token });
+    return res.status(200).send({ status: 'OK', data: { token } });
 }
 
 export { login };
