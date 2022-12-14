@@ -7,6 +7,13 @@ interface User {
     active: 0 | 1 | 4 | 5;
 }
 
+interface UserIn {
+    username: string;
+    email: string;
+    password: string;
+    confirmPassword: string;
+}
+
 interface UserDB {
     id: number;
     username: string;
@@ -17,4 +24,4 @@ interface UserDB {
     active: 0 | 1 | 4 | 5;
 }
 
-export { User, UserDB };
+export { User, UserDB, UserIn };
