@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 import { pool } from '../db/pooling.js';
-import { executeQuery, parseError } from '../db/functions.js';
+import { executeQuery } from '../db/functions.js';
 import { UserDB, UserIn } from './users.interface.js';
 
 async function getUserByUsername(username: string): Promise<UserDB | null> {
@@ -24,6 +24,21 @@ async function registerUser(params: UserIn) {
     try {
         await client.query('BEGIN');
 
+        // Search for username / email duplicate
+        const searchQuery =
+            'SELECT username, email FROM public.user WHERE LOWER(username) = $1::text OR LOWER(email) = $2::text';
+        const searchValues = [params.username.toLowerCase(), params.email.toLowerCase()];
+        const searchResult = await client.query(searchQuery, searchValues);
+        if (searchResult.rowCount) {
+            const duplicateParam =
+                params.username === searchResult.rows[0].username ? 'username' : 'email';
+            return {
+                status: 'error',
+                message: `Field ${duplicateParam} ${params[duplicateParam]} already exists`,
+                statusCode: 409,
+            };
+        }
+
         const hash = await bcrypt.hash(params.password, 5);
         const query =
             'INSERT INTO public.user (username, email, password) VALUES($1::text, $2::text, $3::text)';
@@ -41,23 +56,8 @@ async function registerUser(params: UserIn) {
                 statusCode: 422,
             };
         }
-    } catch (err: Error | unknown) {
+    } catch (err) {
         await client.query('ROLLBACK');
-
-        const parsedError = parseError(err);
-        if (
-            parsedError &&
-            parsedError.routine === '_bt_check_unique' &&
-            typeof parsedError.constraint === 'string'
-        ) {
-            const uniqueParam = parsedError.constraint.split('_')[1];
-            return {
-                status: 'error',
-                message: `Inserted ${uniqueParam} already exists`,
-                statusCode: 409,
-            };
-        }
-
         throw err;
     } finally {
         client.release();
