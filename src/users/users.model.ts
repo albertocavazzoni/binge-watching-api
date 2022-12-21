@@ -3,7 +3,7 @@ import { pool } from '../db/pooling.js';
 import { executeQuery } from '../db/functions.js';
 import { UserDB, UserIn } from './users.interface.js';
 
-async function getUserByUsername(username: string): Promise<UserDB | null> {
+async function getUserByUsername(username: string): Promise<UserDB | undefined> {
     const query = 'SELECT * FROM public.user WHERE username = $1::text';
     const values = [username];
     const rows = await executeQuery(query, values);
@@ -31,7 +31,9 @@ async function registerUser(params: UserIn) {
         const searchResult = await client.query(searchQuery, searchValues);
         if (searchResult.rowCount) {
             const duplicateParam =
-                params.username === searchResult.rows[0].username ? 'username' : 'email';
+                params.username.toLowerCase() === searchResult.rows[0].username.toLowerCase()
+                    ? 'username'
+                    : 'email';
             return {
                 status: 'error',
                 message: `Field ${duplicateParam} ${params[duplicateParam]} already exists`,
