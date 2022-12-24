@@ -2,6 +2,7 @@ import bcrypt from 'bcrypt';
 import { pool } from '../db/pooling.js';
 import { executeQuery } from '../db/functions.js';
 import { UserDB, UserIn } from './users.interface.js';
+import { checkExistingUser } from './users.validator.js';
 
 async function getUserByUsername(username: string): Promise<UserDB | undefined> {
     const query = 'SELECT * FROM public.user WHERE username = $1::text';
@@ -17,24 +18,9 @@ async function registerUser(params: UserIn) {
         await client.query('BEGIN');
 
         // Search for username / email duplicate
-        const searchQuery =
-            'SELECT username, email FROM public.user WHERE LOWER(username) = $1::text OR LOWER(email) = $2::text';
-        const searchValues = [params.username.toLowerCase(), params.email.toLowerCase()];
-        const searchResult = await client.query(searchQuery, searchValues);
-        if (searchResult.rowCount) {
-            const duplicateParam =
-                params.username.toLowerCase() === searchResult.rows[0].username.toLowerCase()
-                    ? 'username'
-                    : 'email';
-            return {
-                status: 'error',
-                error: {
-                    value: params[duplicateParam],
-                    param: duplicateParam,
-                    msg: `Field ${duplicateParam} ${params[duplicateParam]} already exists`,
-                },
-                statusCode: 409,
-            };
+        const existingUser = await checkExistingUser(client, params.username, params.password);
+        if (existingUser.status === 'error') {
+            return { ...existingUser, statusCode: 409 };
         }
 
         const hash = await bcrypt.hash(params.password, 5);
