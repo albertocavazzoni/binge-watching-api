@@ -24,4 +24,10 @@ interface UserDB {
     active: 0 | 1 | 4 | 5;
 }
 
-export { User, UserDB, UserIn };
+interface UserUpdate {
+    username?: string;
+    email?: string;
+    password?: string;
+}
+
+export { User, UserDB, UserIn, UserUpdate };

@@ -50,4 +50,11 @@ async function registerUser(params: UserIn) {
     }
 }
 
-export { getUserByUsername, registerUser };
+async function updatePassword(userId: number, newPassword: string) {
+    const query = 'UPDATE public.user SET password = $1::text WHERE id = $2';
+    const values = [newPassword, userId];
+    const rows = await executeQuery(query, values);
+    return { status: 'OK', data: rows };
+}
+
+export { getUserByUsername, registerUser, updatePassword };

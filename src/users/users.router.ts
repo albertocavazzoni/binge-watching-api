@@ -1,9 +1,13 @@
 import { Router } from 'express';
-import { postUser } from './users.controller.js';
-import { validateRegisterUser, checkPasswords, validate } from './users.validator.js';
+import { checkSchema } from 'express-validator';
+import { postUser, putPassword } from './users.controller.js';
+import { validate } from './users.validator.js';
+import { postUserSchema, putPasswordSchema } from './users.schema.js';
 
 const usersRouter = Router();
 
-usersRouter.post('/', validateRegisterUser(), checkPasswords, validate, postUser);
+usersRouter.post('/', checkSchema(postUserSchema, ['body']), validate, postUser);
+
+usersRouter.put('/password', checkSchema(putPasswordSchema, ['body']), validate, putPassword);
 
 export { usersRouter };

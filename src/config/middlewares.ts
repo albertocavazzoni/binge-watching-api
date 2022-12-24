@@ -43,7 +43,7 @@ async function isAdmin(req: Request, res: Response, next: NextFunction) {
             .send({ status: 'error', message: 'Unauthorized' });
     }
 
-    next();
+    return next();
 }
 
 export { isAuth, isAdmin };
