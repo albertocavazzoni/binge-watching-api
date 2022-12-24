@@ -1,9 +1,5 @@
 import { Request, Response } from 'express';
-import { getUserByUsername, registerUser } from './users.model.js';
-
-async function getMe(req: Request, res: Response) {
-    return res.status(200).send(await getUserByUsername(req.body.user.username));
-}
+import { registerUser } from './users.model.js';
 
 async function postUser(req: Request, res: Response) {
     const result = await registerUser(req.body);
@@ -14,4 +10,4 @@ async function postUser(req: Request, res: Response) {
     }
 }
 
-export { getMe, postUser };
+export { postUser };
