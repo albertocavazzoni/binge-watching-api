@@ -14,9 +14,7 @@ async function postUser(req: Request, res: Response) {
     if (result.status === 'OK') {
         return res.status(result.statusCode).send({ status: result.status, data: result.data });
     } else {
-        return res
-            .status(result.statusCode)
-            .send({ status: result.status, message: result.message });
+        return res.status(result.statusCode).send({ status: result.status, error: result.error });
     }
 }
 

@@ -11,14 +11,6 @@ async function getUserByUsername(username: string): Promise<UserDB | undefined> 
 }
 
 async function registerUser(params: UserIn) {
-    if (params.password !== params.confirmPassword) {
-        return {
-            status: 'error',
-            message: 'Password and confirm password do not match',
-            statusCode: 400,
-        };
-    }
-
     const client = await pool.connect();
 
     try {
@@ -36,7 +28,11 @@ async function registerUser(params: UserIn) {
                     : 'email';
             return {
                 status: 'error',
-                message: `Field ${duplicateParam} ${params[duplicateParam]} already exists`,
+                error: {
+                    value: params[duplicateParam],
+                    param: duplicateParam,
+                    msg: `Field ${duplicateParam} ${params[duplicateParam]} already exists`,
+                },
                 statusCode: 409,
             };
         }
@@ -54,7 +50,9 @@ async function registerUser(params: UserIn) {
         } else {
             return {
                 status: 'error',
-                message: `Can not insert user`,
+                error: {
+                    msg: `Can not insert user`,
+                },
                 statusCode: 422,
             };
         }

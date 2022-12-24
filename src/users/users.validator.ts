@@ -30,6 +30,21 @@ function validateRegisterUser(): ValidationChain[] {
     ];
 }
 
+function checkPasswords(req: Request, res: Response, next: NextFunction) {
+    if (req.body.confirmPassword !== req.body.password) {
+        return res.status(400).send({
+            status: 'error',
+            error: {
+                msg: 'Password and confirm password do not match',
+                param: 'confirmPassword',
+                location: 'body',
+            },
+        });
+    }
+
+    return next();
+}
+
 function validate(req: Request, res: Response, next: NextFunction) {
     const errors = validationResult(req);
     if (errors.isEmpty()) {
@@ -39,4 +54,4 @@ function validate(req: Request, res: Response, next: NextFunction) {
     return res.status(422).send({ status: 'error', error: errors.array()[0] });
 }
 
-export { validateRegisterUser, validate };
+export { validateRegisterUser, checkPasswords, validate };
