@@ -36,7 +36,7 @@ function checkPasswords(req: Request, res: Response, next: NextFunction) {
             status: 'error',
             error: {
                 msg: 'Password and confirm password do not match',
-                param: 'confirmPassword',
+                param: 'password',
                 location: 'body',
             },
         });
