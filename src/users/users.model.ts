@@ -7,8 +7,8 @@ import { checkExistingUser } from './users.validator.js';
 async function getUserByUsername(username: string): Promise<UserDB | undefined> {
     const query = 'SELECT * FROM public.user WHERE username = $1::text';
     const values = [username];
-    const rows = await executeQuery(query, values);
-    return rows[0] ?? undefined;
+    const result = await executeQuery(query, values);
+    return result.rows[0] ?? undefined;
 }
 
 async function registerUser(params: UserIn) {
@@ -52,9 +52,14 @@ async function registerUser(params: UserIn) {
 
 async function updatePassword(userId: number, newPassword: string) {
     const query = 'UPDATE public.user SET password = $1::text WHERE id = $2';
-    const values = [newPassword, userId];
-    const rows = await executeQuery(query, values);
-    return { status: 'OK', data: rows };
+    const hash = await bcrypt.hash(newPassword, 5);
+    const values = [hash, userId];
+    const result = await executeQuery(query, values);
+    if (result.rowCount) {
+        return { status: 'OK', data: result.rowCount };
+    } else {
+        return { status: 'error', error: { msg: 'Erron on updating password' } };
+    }
 }
 
 export { getUserByUsername, registerUser, updatePassword };

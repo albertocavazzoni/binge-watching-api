@@ -45,12 +45,20 @@ const putPasswordSchema: Schema = {
     oldPassword: {
         custom: {
             errorMessage: 'Your old password is wrong',
-            options: (value, { req }) =>
-                bcrypt.compare(value, req.body.user.password).then(res => res),
+            options: async (value, { req }) => {
+                const verifyPassword = await bcrypt.compare(value, req.body!.user.password);
+                if (!verifyPassword) {
+                    throw new Error();
+                }
+            },
             bail: true,
         },
     },
     newPassword: {
+        custom: {
+            errorMessage: 'Your old and new password are equals',
+            options: (value, { req }) => value !== req.body!.oldPassword,
+        },
         isLength: {
             errorMessage: 'Password must be at least 8 chars and max 30 chars',
             options: { min: 8, max: 30 },

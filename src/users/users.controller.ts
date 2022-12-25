@@ -12,7 +12,11 @@ async function postUser(req: Request, res: Response) {
 
 async function putPassword(req: Request, res: Response) {
     const result = await updatePassword(req.body.user.id, req.body.newPassword);
-    return res.status(202).send({ status: result.status, data: result.data });
+    if (result.status === 'OK') {
+        return res.status(202).send({ status: result.status, affectedRows: result.data });
+    } else {
+        return res.status(422).send({ status: result.status, error: result.error });
+    }
 }
 
 export { postUser, putPassword };

@@ -1,10 +1,11 @@
+import { QueryResult } from 'pg';
 import { pool } from './pooling.js';
 
-async function executeQuery(query: string, values: any[] = []): Promise<any[]> {
+async function executeQuery(query: string, values: any[] = []): Promise<QueryResult> {
     const client = await pool.connect();
     try {
         const result = await client.query(query, values);
-        return result.rows;
+        return result;
     } catch (err) {
         throw err;
     } finally {
