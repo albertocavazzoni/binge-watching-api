@@ -62,4 +62,15 @@ async function updatePassword(userId: number, newPassword: string) {
     }
 }
 
-export { getUserByUsername, registerUser, updatePassword };
+async function updateUsername(userId: number, username: string) {
+    const query = 'UPDATE public.user SET username = $1::text WHERE id = $2';
+    const values = [username, userId];
+    const result = await executeQuery(query, values);
+    if (result.rowCount) {
+        return { status: 'OK', data: result.rowCount };
+    } else {
+        return { status: 'error', error: { msg: 'Erron on updating username' } };
+    }
+}
+
+export { getUserByUsername, registerUser, updatePassword, updateUsername };

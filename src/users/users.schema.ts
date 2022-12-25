@@ -1,5 +1,6 @@
 import bcrypt from 'bcrypt';
 import { Schema } from 'express-validator';
+import { getUserByUsername } from './users.model.js';
 
 const postUserSchema: Schema = {
     email: {
@@ -72,4 +73,28 @@ const putPasswordSchema: Schema = {
     },
 };
 
-export { postUserSchema, putPasswordSchema };
+const putUsernameSchema: Schema = {
+    username: {
+        isLength: {
+            errorMessage: 'Username must be at least 8 chars and max 30 chars',
+            options: { min: 6, max: 30 },
+            bail: true,
+        },
+        matches: {
+            errorMessage: 'Username is not valid',
+            options: /^[A-Za-z\d_]+[A-Z-a-z-_\d_\-.]+(?![\/]+)[A-Za-z\d_]$/gm,
+            bail: true,
+        },
+        custom: {
+            errorMessage: 'Username already exists',
+            options: async value => {
+                const result = await getUserByUsername(value);
+                if (result) {
+                    throw new Error();
+                }
+            },
+        },
+    },
+};
+
+export { postUserSchema, putPasswordSchema, putUsernameSchema };

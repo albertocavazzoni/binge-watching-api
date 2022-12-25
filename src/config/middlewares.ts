@@ -9,9 +9,7 @@ async function isAuth(req: Request, res: Response, next: NextFunction) {
     }
     const authHeader = req.header('Authorization');
     if (!authHeader) {
-        return res
-            .status(401)
-            .send({ status: 'error', message: 'Unauthorized' });
+        return res.status(401).send({ status: 'error', error: { msg: 'Unauthorized' } });
     }
 
     const token = authHeader.split(' ')[1];
@@ -21,26 +19,21 @@ async function isAuth(req: Request, res: Response, next: NextFunction) {
         // @ts-ignore Can't change type of payload
         const user = await getUserByUsername(verified.name);
         if (!user || user.active !== 1) {
-            return res.status(404).send({
-                status: 'error',
-                message: 'Problem with authentication',
-            });
+            return res
+                .status(404)
+                .send({ status: 'error', error: { msg: 'Problem with authentication' } });
         }
         req.body.user = user;
         return next();
     } catch (err) {
-        return res
-            .status(401)
-            .send({ status: 'error', message: 'Unauthorized' });
+        return res.status(401).send({ status: 'error', error: { msg: 'Unauthorized' } });
     }
 }
 
 // Always call after isAuth
 async function isAdmin(req: Request, res: Response, next: NextFunction) {
     if (req.body.user!.role !== 55) {
-        return res
-            .status(401)
-            .send({ status: 'error', message: 'Unauthorized' });
+        return res.status(401).send({ status: 'error', error: { msg: 'Unauthorized' } });
     }
 
     return next();
